@@ -1,0 +1,126 @@
+document.addEventListener('DOMContentLoaded', function() {
+    loadStats();
+    initTabs();
+});
+
+function initTabs() {
+    const tabs = document.querySelectorAll('.tab-btn');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            const targetId = this.getAttribute('data-tab');
+            document.getElementById(targetId).classList.add('active');
+        });
+    });
+}
+
+function loadStats() {
+    fetch('get_stats.php')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Полученные данные:', data); // Для отладки
+            updateMailTable(data.mailStats);
+            updateSiteStats(data.siteStats);
+            updateErrorTable(data.errorStats);
+            updateTotalStats(data.totalStats);
+        })
+        .catch(error => console.error('Ошибка загрузки данных:', error));
+}
+
+function updateMailTable(data) {
+    const tbody = document.querySelector('#mailTable tbody');
+    tbody.innerHTML = '';
+    
+    if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6">Нет данных</td></tr>';
+        return;
+    }
+
+    data.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${row.id || ''}</td>
+            <td>${row.date || ''}</td>
+            <td>${row.sender || ''}</td>
+            <td>${row.recipient || ''}</td>
+            <td>${row.site || ''}</td>
+            <td>${row.scenario || ''}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function updateSiteStats(data) {
+    const container = document.getElementById('site-stats');
+    container.innerHTML = '';
+    
+    if (!data || data.length === 0) {
+        container.innerHTML = 'Нет данных по сайтам';
+        return;
+    }
+
+    const table = document.createElement('table');
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>Сайт</th>
+                <th>Количество писем</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${data.map(row => `
+                <tr>
+                    <td>${row.site}</td>
+                    <td>${row.count}</td>
+                </tr>
+            `).join('')}
+        </tbody>
+    `;
+    container.appendChild(table);
+}
+
+function updateErrorTable(data) {
+    const tbody = document.querySelector('#errorTable tbody');
+    tbody.innerHTML = '';
+    
+    if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">Нет ошибок</td></tr>';
+        return;
+    }
+
+    data.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${row.id || ''}</td>
+            <td>${row.site || ''}</td>
+            <td>${row.error_code || ''}</td>
+            <td>${row.error_message || ''}</td>
+            <td>${formatDate(row.date) || ''}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function updateTotalStats(data) {
+    if (data) {
+        document.getElementById('totalEmails').textContent = data.total || 0;
+        document.getElementById('todayEmails').textContent = data.today || 0;
+    }
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleString('ru-RU', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+} 

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Статистика почты</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { text-align: right; margin-bottom: 20px; }
+        .tabs { margin-bottom: 20px; }
+        .tab-btn { 
+            padding: 10px 20px; 
+            border: none; 
+            background: #f0f0f0; 
+            cursor: pointer;
+        }
+        .tab-btn.active { 
+            background: #007bff; 
+            color: white; 
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px;
+        }
+        th, td { 
+            padding: 8px; 
+            border: 1px solid #ddd; 
+            text-align: left; 
+        }
+        th { background: #f5f5f5; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        Всего писем: <span id="totalEmails">0</span> | 
+        Писем сегодня: <span id="todayEmails">0</span>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="mail-stats">Статистика писем</button>
+        <button class="tab-btn" data-tab="site-stats">Статистика по сайтам</button>
+        <button class="tab-btn" data-tab="error-stats">Ошибки</button>
+    </div>
+
+    <div id="mail-stats" class="tab-content active">
+        <table id="mailTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Дата</th>
+                    <th>Отправитель</th>
+                    <th>Получатель</th>
+                    <th>Сайт</th>
+                    <th>Сценарий</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="site-stats" class="tab-content"></div>
+
+    <div id="error-stats" class="tab-content">
+        <table id="errorTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Сайт</th>
+                    <th>Код ошибки</th>
+                    <th>Сообщение</th>
+                    <th>Дата</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
